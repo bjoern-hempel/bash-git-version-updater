@@ -32,72 +32,22 @@
 # ------------
 
 # ------------
-# updateVersion method
+# Updates the git library from friends-of-bash library.
 #
 # @author  Björn Hempel <bjoern@hempel.li>
-# @version 1.0 (2017-06-06)
+# @version 1.0 (2018-03-24)
 # ------------
-updateVersion()
+updateLibrary()
 {
     local pathRoot="$1"
-
-    # check the given path
-    if [ ! -d "$pathRoot/.git" ]; then
-        echo "The path \"$pathRoot\" is not a repository path. Abort." && exit
-    fi
-
-    # extract the name of the given path
-    name=$(basename `git rev-parse --show-toplevel`)
-
-    local     currentTag=$(getCurrentTagFromGivenPath "$pathRoot")
-    local    nextMajorTag=$(getNextTagFromGivenPath "$pathRoot" 0)
-    local    nextMinorTag=$(getNextTagFromGivenPath "$pathRoot" 1)                                                                                                                                                
-    local nextRevisionTag=$(getNextTagFromGivenPath "$pathRoot" 2)
-
-    echo "name:            $name"
-    echo "directory:       $pathRoot"
-    echo "current version: $currentTag"
-    echo
-    echo "Which new version number you want to use? (1) - $nextMajorTag, (2) - $nextMinorTag or (3) $nextRevisionTag"
-    echo
+    local gitLibPath="$pathRoot/$2"
+    local libPath=$(dirname "$gitLibPath")
+    local friendsOfBashGitLibrary="$3"
 
     while true; do
-        read -n 1 -p "Choose (1), (2) or (3): " choice
-        case $choice in
-            # 1
-            1)
-                local nextTag="$nextMajorTag"
-                break
-                ;;
-            # 2
-            2)
-                local nextTag="$nextMinorTag"
-                break
-                ;;
-            # 3
-            3)
-                local nextTag="$nextRevisionTag"
-                break
-                ;;
-            # escape
-            $'\e')
-                echo
-                echo
-                echo "The command was cancelled by user."
-                exit
-                ;;
-            # other character
-            *)
-                echo
-                ;;
-        esac
-    done
+        echo "This will download the current library \"$friendsOfBashGitLibrary\" to \"$gitLibPath\"."
 
-    echo
-    echo
-
-    while true; do
-        read -n 1 -p "This will set the current version number $currentTag to $nextTag. Do you want to continue? Type (y)es or (no): " yn
+        read -n 1 -p "Do you want to continue? Type (y)es or (no): " yn
         case $yn in
             # yes
             [Yy]*)
@@ -122,35 +72,32 @@ updateVersion()
         esac
     done
 
-    # set and push new tag
-    echo
-    $(getSetAndPushTag "$nextTag" "$pathRoot")
-    echo "Done!"
-}
+    # create directory if it does not exist
+    mkdir -p "$libPath"
 
-# check bash version
-if [ "${BASH_VERSINFO}" -lt 4 ]; then
-    echo "This library needs a bash version at least 4 or higher. Your version number: $BASH_VERSION. Please update your bash version."
-    exit
-fi
+    local wgetCheck="which wget >/dev/null"
+    local curlCheck="which curl >/dev/null"
+    local downloadWget="wget -q -O '$gitLibPath' $friendsOfBashGitLibrary"
+    local downloadCurl="curl $friendsOfBashGitLibrary > '$gitLibPath'"
+    local downloadError="echo 'neither application wget nor curl was found'"
+
+    echo
+    bash -c "($wgetCheck && $downloadWget) || ($curlCheck && $downloadCurl) || $downloadError"
+
+    if [ -f ]; then
+        echo "The library \"$gitLibPath\" was updated successfully."
+    else
+        echo "An error occurred while updating the library."
+    fi
+}
 
 # some configs and informations
 scriptname="$0"
 pathBin="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-pathRoot=$(dirname $pathBin)
-pathCurrent="$PWD"
-gitLibPath="$pathRoot/lib/git"
+pathRoot=$(dirname "$pathBin")
+friendsOfBashGitLibrary='https://raw.githubusercontent.com/bjoern-hempel/friends-of-bash/master/lib/git'
+gitLibPath='lib/git'
 
-# check the libraries
-if [ ! -f "$gitLibPath" ]; then
-    echo "The library \"$gitLibPath\" was not found."
-    echo "Please execute \"$pathRoot/bin/update-library\" first"
-    exit
-fi
-
-# include some libraries
-source "$gitLibPath"
-
-# update version
-updateVersion "$pathCurrent"
+# update the git library
+updateLibrary "$pathRoot" "$gitLibPath" "$friendsOfBashGitLibrary"
 
