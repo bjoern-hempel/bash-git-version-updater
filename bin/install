@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+# ------------
+# Friends of Ba$h. A collection of useful bash functions. Easy to include in your bash scripts.
+#
+# @author    Björn Hempel <bjoern@hempel.li>
+# @version   v0.0.0 (2018-03-24)
+#
+# @copyright MIT License
+# @copyright
+# @copyright Copyright (c) 2018 Björn Hempel
+# @copyright
+# @copyright Permission is hereby granted, free of charge, to any person obtaining a copy
+# @copyright of this software and associated documentation files (the "Software"), to deal
+# @copyright in the Software without restriction, including without limitation the rights
+# @copyright to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# @copyright copies of the Software, and to permit persons to whom the Software is
+# @copyright furnished to do so, subject to the following conditions:
+# @copyright
+# @copyright The above copyright notice and this permission notice shall be included in all
+# @copyright copies or substantial portions of the Software.
+# @copyright
+# @copyright THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# @copyright IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# @copyright FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# @copyright AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# @copyright LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# @copyright OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# @copyright SOFTWARE.
+# @copyright
+# @copyright Written by Björn Hempel <bjoern@hempel.li>.
+# ------------
+
+# collect some informations
+pathGlobalBin='/usr/local/bin'
+pathLocalBin='bin'
+nameScript='bash-git-version-updater'
+pathBin="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+pathRoot=$(dirname "$pathBin")
+pathSymlink="$pathGlobalBin/$nameScript"
+pathTarget="$pathRoot/$pathLocalBin/$nameScript"
+
+# check the symlink
+if [ ! -L "$pathSymlink" ]; then
+    echo "Try to create the symlink \"$pathSymlink\"."
+    ln -s "$pathTarget" "$pathSymlink"
+fi
+
+# check symlink again
+if [ ! -L "$pathSymlink" ]; then
+    echo "An error occurred while creating the symlink \"$pathSymlink\"."
+    echo "Maybe try with sudo rights?"
+    exit
+fi
+
+pathReal=$(readlink "$pathSymlink")
+
+if [ "$pathReal" != "$pathTarget" ]; then
+    echo "The symlink \"$pathSymlink\" does not refer to \"$pathTarget\"."
+    echo "The symlink refers to \"$pathReal\"."
+    echo "Please remove the link \"$pathSymlink\" first."
+    echo "Then try again."
+    exit
+fi
+
+echo "The symlink \"$pathSymlink\" already exists and refers to \"$pathTarget\"."
+echo "Nothing to do. Everything all right."
+
