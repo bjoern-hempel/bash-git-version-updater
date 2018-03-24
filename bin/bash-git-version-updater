@@ -1,0 +1,232 @@
+#!/usr/bin/env bash
+
+# ------------
+# Friends of Ba$h. A collection of useful bash functions. Easy to include in your bash scripts.
+#
+# @author    Björn Hempel <bjoern@hempel.li>
+# @version   v0.0.0 (2018-03-24)
+#
+# @copyright MIT License
+# @copyright
+# @copyright Copyright (c) 2018 Björn Hempel
+# @copyright
+# @copyright Permission is hereby granted, free of charge, to any person obtaining a copy
+# @copyright of this software and associated documentation files (the "Software"), to deal
+# @copyright in the Software without restriction, including without limitation the rights
+# @copyright to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# @copyright copies of the Software, and to permit persons to whom the Software is
+# @copyright furnished to do so, subject to the following conditions:
+# @copyright
+# @copyright The above copyright notice and this permission notice shall be included in all
+# @copyright copies or substantial portions of the Software.
+# @copyright
+# @copyright THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# @copyright IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# @copyright FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# @copyright AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# @copyright LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# @copyright OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# @copyright SOFTWARE.
+# @copyright
+# @copyright Written by Björn Hempel <bjoern@hempel.li>.
+# ------------
+
+# ------------
+# Gets the current local tag
+#
+# @author  Björn Hempel <bjoern@hempel.li>
+# @version 1.0 (2017-05-21)
+# ------------
+getCurrentTagFromGivenPath()
+{
+    local gitDir="$1"
+
+    if [ "$gitDir" != "" ] && [ -d "$gitDir" ]; then
+        cd "$gitDir"
+    fi
+
+    local tagName=$(git describe 2>/dev/null | xargs | sed 's~-[0-9]\+-[A-Za-z0-9]\+$~~')
+
+    if [ "$tagName" == "" ]; then
+        echo "v0.0.0"
+    fi
+
+    echo "$tagName"
+}
+
+# ------------
+# Gets the next revision tag.
+#
+# @author  Björn Hempel <bjoern@hempel.li>
+# @version 1.0 (2017-06-06)
+# ------------
+getNextTagFromGivenPath()
+{
+    local position=${2:-2}
+
+    local currentTag=$(getCurrentTagFromGivenPath "$1")
+    local  searchReg="^([v]?)([0-9]+)\.([0-9]+)\.([0-9]+)"
+
+    if ! [[ "$currentTag" =~ $searchReg ]]; then
+        >&2 echo "Unable to parse the current version \"$currentTag\"."
+        return 1
+    fi
+
+    currentTag="${BASH_REMATCH[1]}${BASH_REMATCH[2]}.${BASH_REMATCH[3]}.${BASH_REMATCH[4]}"
+
+    local major=${BASH_REMATCH[2]}
+    local minor=${BASH_REMATCH[3]}
+    local revision=${BASH_REMATCH[4]}
+    local version="$major.$minor.$revision"
+    local prefix=$(echo "$currentTag" | sed "s/$version$//")
+
+    # increase the appropriate version number
+    case $position in
+        0)
+            major=$((major + 1))
+            minor=0
+            revision=0
+            ;;
+        1)
+            minor=$((minor + 1))
+            revision=0
+            ;;
+
+        *)
+            revision=$((revision + 1))
+            ;;
+    esac
+
+    echo "$prefix$major.$minor.$revision"
+}
+
+# ------------
+# Update and push given tag to given git repository.
+#
+# @author  Björn Hempel <bjoern@hempel.li>
+# @version 1.0 (2017-06-10)
+# ------------
+getSetAndPushTag()
+{
+    local nextTag="$1"
+    local gitDir="$2"
+
+    if [ "$gitDir" != "" ] && [ -d "$gitDir" ]; then
+        cd "$gitDir"
+    fi
+
+    git tag -a $nextTag -m "version $nextTag"
+    git push origin $nextTag
+}
+
+# ------------
+# updateVersion method
+#
+# @author  Björn Hempel <bjoern@hempel.li>
+# @version 1.0 (2017-06-06)
+# ------------
+updateVersion()
+{
+    local pathRoot="$1"
+
+    # check the given path
+    if [ ! -d "$pathRoot/.git" ]; then
+        echo "The path \"$pathRoot\" is not a repository path. Abort." && exit
+    fi
+
+    # extract the name of the given path
+    name=$(basename `git rev-parse --show-toplevel`)
+
+    local     currentTag=$(getCurrentTagFromGivenPath "$pathRoot")
+    local    nextMajorTag=$(getNextTagFromGivenPath "$pathRoot" 0)
+    local    nextMinorTag=$(getNextTagFromGivenPath "$pathRoot" 1)                                                                                                                                                
+    local nextRevisionTag=$(getNextTagFromGivenPath "$pathRoot" 2)
+
+    echo "name:            $name"
+    echo "directory:       $pathRoot"
+    echo "current version: $currentTag"
+    echo
+    echo "Which new version number you want to use? (1) - $nextMajorTag, (2) - $nextMinorTag or (3) $nextRevisionTag"
+    echo
+
+    while true; do
+        read -n 1 -p "Choose (1), (2) or (3): " choice
+        case $choice in
+            # 1
+            1)
+                local nextTag="$nextMajorTag"
+                break
+                ;;
+            # 2
+            2)
+                local nextTag="$nextMinorTag"
+                break
+                ;;
+            # 3
+            3)
+                local nextTag="$nextRevisionTag"
+                break
+                ;;
+            # escape
+            $'\e')
+                echo
+                echo
+                echo "The command was cancelled by user."
+                exit
+                ;;
+            # other character
+            *)
+                echo
+                ;;
+        esac
+    done
+
+    echo
+    echo
+
+    while true; do
+        read -n 1 -p "This will set the current version number $currentTag to $nextTag. Do you want to continue? Type (y)es or (no): " yn
+        case $yn in
+            # yes
+            [Yy]*)
+                break
+                ;;
+            # no
+            [Nn]*)
+                echo                                                                                                                                                                                              
+                echo "The command was cancelled by user."
+                exit
+                ;;
+            # escape
+            $'\e')
+                echo
+                echo "The command was cancelled by user."
+                exit
+                ;;
+            # other character
+            *)
+                echo
+                ;;
+        esac
+    done
+
+    # set and push new tag
+    echo
+    $(getSetAndPushTag "$nextTag" "$pathRoot")
+    echo "Done!"
+}
+
+# check bash version
+if [ "${BASH_VERSINFO}" -lt 4 ]; then
+    echo "This library needs a bash version at least 4 or higher. Your version number: $BASH_VERSION. Please update your bash version."
+    exit
+fi
+
+# some configs and informations
+scriptname="$0"
+pathRoot="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+pathCurrent="$PWD"
+
+# update version
+updateVersion "$pathCurrent"
+
