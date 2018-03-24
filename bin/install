@@ -39,6 +39,8 @@ pathBin="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 pathRoot=$(dirname "$pathBin")
 pathSymlink="$pathGlobalBin/$nameScript"
 pathTarget="$pathRoot/$pathLocalBin/$nameScript"
+pathLibGit="$pathRoot/lib/git"
+updateScript="bin/update-library"
 
 # check the symlink
 if [ ! -L "$pathSymlink" ]; then
@@ -65,4 +67,11 @@ fi
 
 echo "The symlink \"$pathSymlink\" already exists and refers to \"$pathTarget\"."
 echo "Nothing to do. Everything all right."
+
+if [ -f "$pathLibGit" ]; then
+    echo "The lib \"$pathLibGit\" already exists. Noting to do."
+    exit
+fi
+
+$updateScript
 
