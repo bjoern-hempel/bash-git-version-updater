@@ -135,8 +135,13 @@ if [ "${BASH_VERSINFO}" -lt 4 ]; then
 fi
 
 # some configs and informations
-scriptname="$0"
-pathBin="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bashSource="${BASH_SOURCE[0]}"
+
+if [ -L "$bashSource" ]; then
+    bashSource=$(readlink "$bashSource")
+fi
+
+pathBin="$(cd "$(dirname "$bashSource")" && pwd)"
 pathRoot=$(dirname $pathBin)
 pathCurrent="$PWD"
 gitLibPath="$pathRoot/lib/git"
