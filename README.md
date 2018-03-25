@@ -90,6 +90,8 @@ user$ /your/directory/bin/bash-git-version-updater
 
 ## 2.) Version rules
 
+### 2.1) set new version
+
 Possible version that will be parsed:
 
 * case1: no version available
@@ -101,3 +103,26 @@ The version of the given repository will be set to:
 * case1: v0.0.1 or v0.1.0 or v1.0.0 
 * case2: v[major+1].[minor+1].[revision+1]
 * case3: [major+1].[minor+1].[revision+1]
+
+### 2.2) show version
+
+#### No version available
+
+```
+user$ git describe
+fatal: No names found, cannot describe anything.
+```
+
+#### Already set version
+
+```
+user$ git describe
+v0.0.5-2-gf2d1127
+```
+
+or
+
+```
+user$ git describe
+v0.0.6
+```
