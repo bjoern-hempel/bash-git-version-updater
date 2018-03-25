@@ -69,11 +69,9 @@ Maybe you need administration rights:
 
 ```
 user$ cd /opt
-user$ mkdir bash-git-version-updater && cd bash-git-version-updater
+user$ sudo install -d -o $(whoami) -m 775 bash-git-version-updater && cd bash-git-version-updater
 user$ git checkout git@github.com:bjoern-hempel/bash-git-version-updater.git .
-user$ bin/install
-user$ cd /path/to/git/project
-user$ bash-git-version-updater
+user$ sudo bin/install
 ```
 
 ### 1.2) Local installation
@@ -84,7 +82,23 @@ In that case you don't need administration rights.
 user$ cd /your/directory
 user$ git checkout git@github.com:bjoern-hempel/bash-git-version-updater.git .
 user$ bin/update-library
+```
+
+### 1.3 Update version of given git project
+
+```
 user$ cd /path/to/git/project
+```
+
+Global installation:
+
+```
+user$ bash-git-version-updater
+```
+
+Local installation:
+
+```
 user$ /your/directory/bin/bash-git-version-updater
 ```
 
