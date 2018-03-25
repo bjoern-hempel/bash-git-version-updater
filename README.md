@@ -83,6 +83,7 @@ In that case you don't need administration rights.
 ```
 user$ cd /your/directory
 user$ git checkout git@github.com:bjoern-hempel/bash-git-version-updater.git .
+user$ bin/update-library
 user$ cd /path/to/git/project
 user$ /your/directory/bin/bash-git-version-updater
 ```
