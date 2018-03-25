@@ -63,6 +63,8 @@ Looks good. Now you are ready to use this library on your mac as well.
 
 ## 1.) First usage
 
+### Global installation
+
 Maybe you need administration rights:
 
 ```
@@ -72,4 +74,15 @@ user$ git checkout git@github.com:bjoern-hempel/bash-git-version-updater.git .
 user$ bin/install
 user$ cd /path/to/git/project
 user$ bash-git-version-updater
+```
+
+### Local installation
+
+In that case you don't need administration rights.
+
+```
+user$ cd /your/directory
+user$ git checkout git@github.com:bjoern-hempel/bash-git-version-updater.git .
+user$ cd /path/to/git/project
+user$ /your/directory/bin/bash-git-version-updater
 ```
