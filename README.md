@@ -95,8 +95,8 @@ user$ /your/directory/bin/bash-git-version-updater
 Possible version that will be parsed:
 
 * case1: no version available
-* case2: v[major].[minor].[revision](-[commit-number]-[revision-hash])?
-* case3: [major].[minor].[revision](-[commit-number]-[revision-hash])?
+* case2: v[major].[minor].[revision] (-[commit-number]]-[revision-hash])?
+* case3: [major].[minor].[revision] (-[commit-number]-[revision-hash])?
 
 The version of the given repository will be set to:
 
