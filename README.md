@@ -63,7 +63,7 @@ Looks good. Now you are ready to use this library on your mac as well.
 
 ## 1.) First usage
 
-### Global installation
+### 1.1) Global installation
 
 Maybe you need administration rights:
 
@@ -76,7 +76,7 @@ user$ cd /path/to/git/project
 user$ bash-git-version-updater
 ```
 
-### Local installation
+### 1.2) Local installation
 
 In that case you don't need administration rights.
 
@@ -87,3 +87,15 @@ user$ bin/update-library
 user$ cd /path/to/git/project
 user$ /your/directory/bin/bash-git-version-updater
 ```
+
+## 2.) Version rules
+
+Possible version that will be parsed:
+
+* v[major].[minor].[revision]
+* [major].[minor].[revision]
+
+The version of the given repository will be set to:
+
+* v[major].[minor].[revision]
+* [major].[minor].[revision]
