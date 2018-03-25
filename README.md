@@ -98,6 +98,6 @@ Possible version that will be parsed:
 
 The version of the given repository will be set to:
 
-* case1: v0.0.1 or v0.1.0 or v1.0.1 
+* case1: v0.0.1 or v0.1.0 or v1.0.0 
 * case2: v[major+1].[minor+1].[revision+1]
 * case3: [major+1].[minor+1].[revision+1]
