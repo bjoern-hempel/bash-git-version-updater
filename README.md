@@ -30,15 +30,6 @@ user$ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/m
 user$ brew update && brew install bash
 ```
 
-Reopen your terminal and check again:
-
-```bash
-user$ bash --version
-GNU bash, Version 4.4.19(1)-release (x86_64-apple-darwin17.3.0)
-Copyright (C) 2016 Free Software Foundation, Inc.
-...
-```
-
 Add the new shell to the list of allowed shells:
 
 ```
@@ -57,6 +48,15 @@ Check the used shell locations:
 user$ which -a bash
 /usr/local/bin/bash
 /bin/bash
+```
+
+Reopen your terminal and check again:
+
+```bash
+user$ bash --version
+GNU bash, Version 4.4.19(1)-release (x86_64-apple-darwin17.3.0)
+Copyright (C) 2016 Free Software Foundation, Inc.
+...
 ```
 
 Looks good. Now you are ready to use this library on your mac as well.
