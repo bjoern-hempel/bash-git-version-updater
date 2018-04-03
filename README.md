@@ -70,7 +70,7 @@ Maybe you need administration rights:
 ```
 user$ cd /opt
 user$ sudo install -d -o $(whoami) -m 775 bash-git-version-updater && cd bash-git-version-updater
-user$ git checkout git@github.com:bjoern-hempel/bash-git-version-updater.git .
+user$ git clone https://github.com/bjoern-hempel/bash-git-version-updater.git .
 user$ sudo bin/install
 ```
 
